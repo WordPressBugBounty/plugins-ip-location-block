@@ -66,6 +66,7 @@ abstract class IP_Location_Block_API {
 			'asn'          => null,
 		)
 	);*/
+	protected $template = [];
 
 	/**
 	 * IP_Location_Block_API constructor.
@@ -120,7 +121,7 @@ abstract class IP_Location_Block_API {
 			unset( $args['asn'] ); // Make sure we don't pass 'asn' to apis, it should be only used with local providers.
 		}
 
-		$template   = isset( $this->template ) ? $this->template : array();
+		$template   = !empty( $this->template ) ? $this->template : array();
 		$cacheKey   = md5( $ip . ( isset( $template['url'] ) ? $template['url'] : '' ) );
 		$cacheGroup = 'ip-location-block';
 
@@ -658,19 +659,19 @@ class IP_Location_Block_API_Cache extends IP_Location_Block_API {
 		}
 
 		$cache = array(
-			'time' => $time,
-			'ip'   => $ip,
-			'hook' => $hook,
-			'asn'  => $validate['asn'], // @since 3.0.4
-			'code' => $validate['code'],
-			'auth' => $validate['auth'], // get_current_user_id() > 0
-			'city' => $validate['city'],
-			'state' => $validate['state'],
-			'fail' => $fail, // $validate['auth'] ? 0 : $fail,
-			'reqs' => $settings['save_statistics'] ? $call : 0,
-			'last' => $last,
-			'view' => $view,
-			'host' => isset( $validate['host'] ) && $validate['host'] !== $ip ? $validate['host'] : '',
+			'time'  => $time,
+			'ip'    => $ip,
+			'hook'  => $hook,
+			'asn'   => isset( $validate['asn'] ) ? $validate['asn'] : '', // @since 3.0.4
+			'code'  => isset( $validate['code'] ) ? $validate['code'] : '',
+			'auth'  => isset( $validate['auth'] ) ? $validate['auth'] : '', // get_current_user_id() > 0
+			'city'  => isset( $validate['city'] ) ? $validate['city'] : '',
+			'state' => isset( $validate['state'] ) ? $validate['state'] : '',
+			'fail'  => $fail, // $validate['auth'] ? 0 : $fail,
+			'reqs'  => $settings['save_statistics'] ? $call : 0,
+			'last'  => $last,
+			'view'  => $view,
+			'host'  => isset( $validate['host'] ) && $validate['host'] !== $ip ? $validate['host'] : '',
 		);
 		// do not update cache while installing geolocation databases
 		if ( $settings['cache_hold'] && ! ( $validate['auth'] && 'ZZ' === $validate['code'] ) ) {
