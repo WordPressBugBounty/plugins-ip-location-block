@@ -44,7 +44,8 @@ class IP_Location_Block {
 	 */
 	private function __construct() {
 		// Run the loader to execute all of the hooks with WordPress.
-		$this->register_hooks( $loader = new IP_Location_Block_Loader() );
+		$loader = new IP_Location_Block_Loader();
+		$this->register_hooks( $loader );
 		$loader->run();
 		unset( $loader );
 	}
@@ -918,7 +919,7 @@ class IP_Location_Block {
 		}
 
 		// the same rule should be applied to login and logout
-		! empty( $settings['login_action']['login'] ) and $settings['login_action']['logout'] = true;
+		// ! empty( $settings['login_action']['login'] ) and $settings['login_action']['logout'] = true;
 
 		// avoid conflict with WP Limit Login Attempts (wp-includes/pluggable.php @since  0.2.5.0)
 		! empty( $_POST ) and add_action( 'wp_login_failed', array( $this, 'auth_fail' ), $settings['priority'][0] );
@@ -1348,6 +1349,10 @@ class IP_Location_Block {
 	 * Validate on public facing pages.
 	 */
 	public function validate_public() {
+
+		if ( IP_Location_Block_Util::is_user_logged_in() ) {
+			return; // skip validation for logged in users
+		}
 		$settings = self::get_option();
 		$public   = $settings['public'];
 
