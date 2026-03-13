@@ -142,6 +142,44 @@ class IP_Location_Block_Admin {
 	}
 
 	/**
+	 * Show admin notice when server-level caching conflicts with public page validation.
+	 */
+	public function show_cache_compat_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$settings = IP_Location_Block::get_option();
+		if ( ! empty( $settings['cache_compat_dismissed'] ) ) {
+			return;
+		}
+		if ( ! ( 1 & $settings['validation']['public'] ) ) {
+			return;
+		}
+
+		// Detect hosting environment
+		if ( function_exists( 'is_wpe' ) && is_wpe() === '1' ) {
+			$host_name   = 'WP Engine';
+			$article_url = 'https://iplocationblock.com/codex/compatibility-with-wpengine/';
+		} elseif ( isset( $_SERVER['KINSTA_CACHE_ZONE'] ) ) {
+			$host_name   = 'Kinsta';
+			$article_url = 'https://iplocationblock.com/codex/compatibility-with-kinsta/';
+		} else {
+			return;
+		}
+		?>
+		<div class="notice notice-warning ip-location-block-notice-cache-compat" data-notice="cache_compat">
+			<p><strong><?php _e( 'IP Location Block: Full-Page Cache Conflict', 'ip-location-block' ); ?></strong></p>
+			<p><?php printf(
+				__( 'Your site is hosted on <strong>%1$s</strong>, which uses server-level page caching that runs before PHP. When "Front-end target settings" validation is enabled, cached pages may be served to all visitors without geolocation checks. <a href="%2$s" target="_blank">Learn how to configure %1$s for compatibility</a>.', 'ip-location-block' ),
+				$host_name,
+				$article_url
+			); ?></p>
+			<p><a href="<?php echo esc_url( $article_url ); ?>" target="_blank" class="button button-primary"><?php _e( 'Read More', 'ip-location-block' ); ?></a> <button type="button" class="button ip-location-block-cache-compat-dismiss"><?php _e( 'I Understand', 'ip-location-block' ); ?></button></p>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Load the plugin text domain for translation and add body class.
 	 *
 	 */
@@ -831,54 +869,56 @@ class IP_Location_Block_Admin {
 			$instance = IP_Location_Block::get_instance();
 			$validate = $instance->validate_ip( 'login', $settings, true, false ); // skip authentication check
 
-			switch ( $validate['result'] ) {
-				case 'limited':
-					self::add_admin_notice( 'error',
-						__( 'Once you logout, you will be unable to login again because the number of login attempts reaches the limit.', 'ip-location-block' ) . ' ' .
-						sprintf(
-							__( 'Please remove your IP address in &#8220;%1$sStatistics in IP address cache%2$s&#8221; on &#8220;%3$sStatistics%4$s&#8221; tab to prevent locking yourself out.', 'ip-location-block' ),
-							'<strong><a href="' . esc_url( add_query_arg( array(
-									'page' => IP_Location_Block::PLUGIN_NAME,
-									'tab'  => 1,
-									'sec'  => 2
-								), $adminurl ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-2' ) . '">', '</a></strong>',
-							'<strong>', '</strong>'
-						)
-					);
-					break;
-
-				case 'blocked':
-				case 'extra':
-					self::add_admin_notice( 'error',
-						( $settings['matching_rule'] ?
-							__( 'Once you logout, you will be unable to login again because your country code or IP address is in the blacklist.', 'ip-location-block' ) :
-							__( 'Once you logout, you will be unable to login again because your country code or IP address is not in the whitelist.', 'ip-location-block' )
-						) . ' ' .
-						( 'ZZ' !== $validate['code'] ?
+			if ( $validate && isset( $validate['result'] ) ) {
+				switch ( $validate['result'] ) {
+					case 'limited':
+						self::add_admin_notice( 'error',
+							__( 'Once you logout, you will be unable to login again because the number of login attempts reaches the limit.', 'ip-location-block' ) . ' ' .
 							sprintf(
-								__( 'Please check your &#8220;%sValidation rules and behavior%s&#8221;.', 'ip-location-block' ),
-								'<strong><a href="' . esc_url( add_query_arg( array(
-										'page' => IP_Location_Block::PLUGIN_NAME,
-										'tab'  => 0,
-										'sec'  => 0
-									), $network ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-0' ) . '">', '</a></strong>'
-							) :
-							sprintf(
-								__( 'Please confirm your local geolocation database files exist at &#8220;%sLocal database settings%s&#8221; section, or remove your IP address in cache at &#8220;%sStatistics in cache%s&#8221; section.', 'ip-location-block' ),
-								'<strong><a href="' . esc_url( add_query_arg( array(
-										'page' => IP_Location_Block::PLUGIN_NAME,
-										'tab'  => 0,
-										'sec'  => 5
-									), $network ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-5' ) . '">', '</a></strong>',
+								__( 'Please remove your IP address in &#8220;%1$sStatistics in IP address cache%2$s&#8221; on &#8220;%3$sStatistics%4$s&#8221; tab to prevent locking yourself out.', 'ip-location-block' ),
 								'<strong><a href="' . esc_url( add_query_arg( array(
 										'page' => IP_Location_Block::PLUGIN_NAME,
 										'tab'  => 1,
 										'sec'  => 2
-									), $adminurl ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-2' ) . '">', '</a></strong>'
+									), $adminurl ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-2' ) . '">', '</a></strong>',
+								'<strong>', '</strong>'
 							)
-						)
-					);
-					break;
+						);
+						break;
+
+					case 'blocked':
+					case 'extra':
+						self::add_admin_notice( 'error',
+							( $settings['matching_rule'] ?
+								__( 'Once you logout, you will be unable to login again because your country code or IP address is in the blacklist.', 'ip-location-block' ) :
+								__( 'Once you logout, you will be unable to login again because your country code or IP address is not in the whitelist.', 'ip-location-block' )
+							) . ' ' .
+							( 'ZZ' !== $validate['code'] ?
+								sprintf(
+									__( 'Please check your &#8220;%sValidation rules and behavior%s&#8221;.', 'ip-location-block' ),
+									'<strong><a href="' . esc_url( add_query_arg( array(
+											'page' => IP_Location_Block::PLUGIN_NAME,
+											'tab'  => 0,
+											'sec'  => 0
+										), $network ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-0' ) . '">', '</a></strong>'
+								) :
+								sprintf(
+									__( 'Please confirm your local geolocation database files exist at &#8220;%sLocal database settings%s&#8221; section, or remove your IP address in cache at &#8220;%sStatistics in cache%s&#8221; section.', 'ip-location-block' ),
+									'<strong><a href="' . esc_url( add_query_arg( array(
+											'page' => IP_Location_Block::PLUGIN_NAME,
+											'tab'  => 0,
+											'sec'  => 5
+										), $network ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-5' ) . '">', '</a></strong>',
+									'<strong><a href="' . esc_url( add_query_arg( array(
+											'page' => IP_Location_Block::PLUGIN_NAME,
+											'tab'  => 1,
+											'sec'  => 2
+										), $adminurl ) . '#' . IP_Location_Block::PLUGIN_NAME . '-section-2' ) . '">', '</a></strong>'
+								)
+							)
+						);
+						break;
+				}
 			}
 		}
 
@@ -939,6 +979,8 @@ class IP_Location_Block_Admin {
 		add_action( 'admin_notices', array( $this, 'show_intro_notice' ) );
 		// API key upgrade notice
 		add_action( 'admin_notices', array( $this, 'show_api_key_upgrade_notice' ) );
+		// Cache compatibility notice
+		add_action( 'admin_notices', array( $this, 'show_cache_compat_notice' ) );
 	}
 
 	/**
@@ -2215,6 +2257,11 @@ class IP_Location_Block_Admin {
 
                 if ( 'welcome' === $notice_id ) {
 					$settings['welcome'] = true;
+                    $dismissed = true;
+	                IP_Location_Block::update_option( $settings );
+                }
+                if ( 'cache_compat' === $notice_id ) {
+					$settings['cache_compat_dismissed'] = true;
                     $dismissed = true;
 	                IP_Location_Block::update_option( $settings );
                 }
