@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'IPLocationBlock\\Admin\\NativePromoNotice' => $baseDir . '/src/Admin/NativePromoNotice.php',
     'IPLocationBlock\\Admin\\ReactAdmin' => $baseDir . '/src/Admin/ReactAdmin.php',
     'IPLocationBlock\\Admin\\WelcomeNotice' => $baseDir . '/src/Admin/WelcomeNotice.php',
     'IPLocationBlock\\Compat' => $baseDir . '/src/Compat.php',

@@ -22,6 +22,7 @@ class ComposerStaticInit543047a5658bf1edb858fdaedd7454e7
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'IPLocationBlock\\Admin\\NativePromoNotice' => __DIR__ . '/../..' . '/src/Admin/NativePromoNotice.php',
         'IPLocationBlock\\Admin\\ReactAdmin' => __DIR__ . '/../..' . '/src/Admin/ReactAdmin.php',
         'IPLocationBlock\\Admin\\WelcomeNotice' => __DIR__ . '/../..' . '/src/Admin/WelcomeNotice.php',
         'IPLocationBlock\\Compat' => __DIR__ . '/../..' . '/src/Compat.php',
