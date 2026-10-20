@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'iplocationblock/ip-location-block',
-        'pretty_version' => 'v1.4.2',
-        'version' => '1.4.2.0',
-        'reference' => 'f3e60aae315d939fe82c9fd4953e5e1dc37ad9e0',
+        'pretty_version' => 'v1.4.3',
+        'version' => '1.4.3.0',
+        'reference' => 'b3f768519da4828f4bbcaa2751d80e1bf84ede83',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'iplocationblock/ip-location-block' => array(
-            'pretty_version' => 'v1.4.2',
-            'version' => '1.4.2.0',
-            'reference' => 'f3e60aae315d939fe82c9fd4953e5e1dc37ad9e0',
+            'pretty_version' => 'v1.4.3',
+            'version' => '1.4.3.0',
+            'reference' => 'b3f768519da4828f4bbcaa2751d80e1bf84ede83',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

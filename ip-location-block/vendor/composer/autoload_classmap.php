@@ -47,6 +47,7 @@ return array(
     'IPLocationBlock\\Rest\\RestApi' => $baseDir . '/src/Rest/RestApi.php',
     'IPLocationBlock\\Settings\\Options' => $baseDir . '/src/Settings/Options.php',
     'IPLocationBlock\\Settings\\PrecisionCacheGuard' => $baseDir . '/src/Settings/PrecisionCacheGuard.php',
+    'IPLocationBlock\\Support\\BcMath' => $baseDir . '/src/Support/BcMath.php',
     'IPLocationBlock\\Support\\Dns' => $baseDir . '/src/Support/Dns.php',
     'IPLocationBlock\\Support\\FileSystem' => $baseDir . '/src/Support/FileSystem.php',
     'IPLocationBlock\\Support\\Ip' => $baseDir . '/src/Support/Ip.php',

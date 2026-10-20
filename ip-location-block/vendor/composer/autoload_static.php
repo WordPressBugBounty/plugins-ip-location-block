@@ -62,6 +62,7 @@ class ComposerStaticInit543047a5658bf1edb858fdaedd7454e7
         'IPLocationBlock\\Rest\\RestApi' => __DIR__ . '/../..' . '/src/Rest/RestApi.php',
         'IPLocationBlock\\Settings\\Options' => __DIR__ . '/../..' . '/src/Settings/Options.php',
         'IPLocationBlock\\Settings\\PrecisionCacheGuard' => __DIR__ . '/../..' . '/src/Settings/PrecisionCacheGuard.php',
+        'IPLocationBlock\\Support\\BcMath' => __DIR__ . '/../..' . '/src/Support/BcMath.php',
         'IPLocationBlock\\Support\\Dns' => __DIR__ . '/../..' . '/src/Support/Dns.php',
         'IPLocationBlock\\Support\\FileSystem' => __DIR__ . '/../..' . '/src/Support/FileSystem.php',
         'IPLocationBlock\\Support\\Ip' => __DIR__ . '/../..' . '/src/Support/Ip.php',
